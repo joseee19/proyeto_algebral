@@ -24,6 +24,7 @@ class MatrixOperationWindow(QMainWindow):
         substraction_matrix_button = QPushButton("Resta")
         multiplication_matrix_button = QPushButton("Multiplicación")
         close_button = QPushButton("Volver")
+        close_button.setFixedSize(80, 30)
 
         close_button.clicked.connect(self.close_window)
 
