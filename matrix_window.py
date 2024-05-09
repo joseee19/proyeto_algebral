@@ -1,10 +1,11 @@
 from matrix_operation_window import MatrixOperationWindow
+from inverse_matrix_window import InverseMatrixWindow
 from PyQt5.QtWidgets import (
     QMainWindow,
     QPushButton,
     QVBoxLayout,
     QHBoxLayout,
-    QWidget,
+    QWidget
 )
 
 
@@ -16,6 +17,7 @@ class MatrixWindow(QMainWindow):
         self.setFixedSize(640, 480)
         self.setStyleSheet("background-color: #bcbcbc")
         self.matrix_operation_window = None
+        self.inverse_matrix_window = None
         self.container = QWidget()
         self.initUI()
 
@@ -31,7 +33,10 @@ class MatrixWindow(QMainWindow):
         markov_chain = QPushButton("Cadena de Markov")
         close_button = QPushButton("Volver")
 
+        close_button.setFixedSize(80, 30)
+
         operations_button.clicked.connect(self.show_mtx_op_wndw)
+        inverse_matrix_button.clicked.connect(self.show_inverse_matrix_wndw)
         close_button.clicked.connect(self.close_window)
 
         horizontal_layout1 = QHBoxLayout()
@@ -60,6 +65,11 @@ class MatrixWindow(QMainWindow):
         self.setVisible(False)
         self.matrix_operation_window = MatrixOperationWindow(self)
         self.matrix_operation_window.show()
+
+    def show_inverse_matrix_wndw(self):
+        self.setVisible(False)
+        self.inverse_matrix_window = InverseMatrixWindow(self)
+        self.inverse_matrix_window.show()
 
     def closeEvent(self, event):
         self.close_window()
