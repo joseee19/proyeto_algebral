@@ -11,8 +11,11 @@ class MatrixSum(QWidget):
         self.setWindowTitle('Suma de Matrices')
         self.setGeometry(100, 100, 300, 200)
 
-        self.size_label = QLabel('Tamaño de la matriz:')
-        self.size_input = QLineEdit()
+        self.rows_label = QLabel('Número de filas:')
+        self.rows_input = QLineEdit()
+        self.cols_label = QLabel('Número de columnas:')
+        self.cols_input = QLineEdit()
+
         self.create_matrix_button = QPushButton('Crear Matrices')
         self.create_matrix_button.clicked.connect(self.create_matrices_input)
 
@@ -27,8 +30,10 @@ class MatrixSum(QWidget):
         self.sum_button.setDisabled(True)
 
         layout = QVBoxLayout()
-        layout.addWidget(self.size_label)
-        layout.addWidget(self.size_input)
+        layout.addWidget(self.rows_label)
+        layout.addWidget(self.rows_input)
+        layout.addWidget(self.cols_label)
+        layout.addWidget(self.cols_input)
         layout.addWidget(self.create_matrix_button)
         layout.addWidget(self.matrix1_label)
         layout.addWidget(self.matrix2_label)
@@ -39,16 +44,18 @@ class MatrixSum(QWidget):
         self.setLayout(layout)
 
     def create_matrices_input(self):
-        size = int(self.size_input.text())
-        self.matrix1_input = [[QLineEdit() for _ in range(size)] for _ in range(size)]
-        self.matrix2_input = [[QLineEdit() for _ in range(size)] for _ in range(size)]
+        rows = int(self.rows_input.text())
+        cols = int(self.cols_input.text())
+
+        self.matrix1_input = [[QLineEdit() for _ in range(cols)] for _ in range(rows)]
+        self.matrix2_input = [[QLineEdit() for _ in range(cols)] for _ in range(rows)]
 
         # Setup layout for matrices
         matrix_layout = QGridLayout()
-        for i in range(size):
-            for j in range(size):
+        for i in range(rows):
+            for j in range(cols):
                 matrix_layout.addWidget(self.matrix1_input[i][j], i, j)
-                matrix_layout.addWidget(self.matrix2_input[i][j], i + size + 1, j)
+                matrix_layout.addWidget(self.matrix2_input[i][j], i + rows + 1, j)
         self.matrix1_label.show()
         self.matrix2_label.show()
         self.result_label.show()
@@ -59,14 +66,15 @@ class MatrixSum(QWidget):
         layout.addLayout(matrix_layout)
 
     def sum_matrices(self):
-        size = len(self.matrix1_input)
+        rows = len(self.matrix1_input)
+        cols = len(self.matrix1_input[0])
 
         # Parse input matrices
         try:
-            matrix1 = [[int(self.matrix1_input[i][j].text()) for j in range(size)] for i in range(size)]
-            matrix2 = [[int(self.matrix2_input[i][j].text()) for j in range(size)] for i in range(size)]
+            matrix1 = [[int(self.matrix1_input[i][j].text()) for j in range(cols)] for i in range(rows)]
+            matrix2 = [[int(self.matrix2_input[i][j].text()) for j in range(cols)] for i in range(rows)]
 
-            result_matrix = [[matrix1[i][j] + matrix2[i][j] for j in range(size)] for i in range(size)]
+            result_matrix = [[matrix1[i][j] + matrix2[i][j] for j in range(cols)] for i in range(rows)]
 
             result_text = '\n'.join(' '.join(str(cell) for cell in row) for row in result_matrix)
             self.result_output.setText(result_text)
@@ -79,4 +87,3 @@ if __name__ == '__main__':
     window = MatrixSum()
     window.show()
     sys.exit(app.exec_())
-
