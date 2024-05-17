@@ -3,10 +3,11 @@ import numpy as np
 from PyQt5.QtWidgets import QMessageBox
 
 
-class InverseMatrixWindow(QtWidgets.QWidget):
+class DeterminantWindow(QtWidgets.QWidget):
     def __init__(self, app):
         super().__init__()
         self.app = app
+        self.stored_matrix = None
         self.initUI()
 
     def initUI(self):
@@ -34,7 +35,7 @@ class InverseMatrixWindow(QtWidgets.QWidget):
         vbox.addLayout(self.matrix_layout)
 
         # Botón para obtener y mostrar la matriz
-        self.get_matrix_button = QtWidgets.QPushButton("Obtener matriz inversa")
+        self.get_matrix_button = QtWidgets.QPushButton("Obtener determinante")
         self.get_matrix_button.clicked.connect(self.get_matrix)
         self.get_matrix_button.setDisabled(True)
         vbox.addWidget(self.get_matrix_button)
@@ -66,7 +67,6 @@ class InverseMatrixWindow(QtWidgets.QWidget):
         self.get_matrix_button.setDisabled(False)
 
     def get_matrix(self):
-        size = len(self.matrix_widgets)
         matrix = []
 
         # Recopilar valores de los campos de entrada
@@ -81,13 +81,10 @@ class InverseMatrixWindow(QtWidgets.QWidget):
         for row in matrix:
             print(row)
 
-
-
-        # Aquí puedes almacenar la matriz en una variable o usarla para otros fines
         self.stored_matrix = matrix
-        self.get_inverse_matrix()
+        self.get_determinant()
 
-    def get_inverse_matrix(self):
+    def get_determinant(self):
         # Ejemplo de matriz cuadrada
         matrix = np.array(
             self.stored_matrix
@@ -98,7 +95,8 @@ class InverseMatrixWindow(QtWidgets.QWidget):
 
         # Calcula el determinante para verificar si la matriz es invertible
         determinant = np.linalg.det(matrix)
-        QMessageBox.information(self, "Determinante de la matriz:", f"El resultado de la determinante es:\n{str(determinant)}")
+        QMessageBox.information(self, "Determinante de la matriz:", f"El resultado de la determinante es:\n"
+                                                                    f"{str(determinant)}")
 
     def closeEvent(self, event):
         self.close_window()

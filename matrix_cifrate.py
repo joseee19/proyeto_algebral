@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets
 import numpy as np
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QLineEdit
 
 
 class InverseMatrixWindow(QtWidgets.QWidget):
@@ -8,6 +8,7 @@ class InverseMatrixWindow(QtWidgets.QWidget):
         super().__init__()
         self.app = app
         self.stored_matrix = None
+        self.message = QLineEdit()
         self.matrix_widgets = []
         self.initUI()
 

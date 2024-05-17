@@ -5,12 +5,14 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QWidget,
 )
+from sum_sub_window import SumSubMatrixWindow
 
 
 class MatrixOperationWindow(QMainWindow):
     def __init__(self, app):
         super().__init__()
         self.app = app
+        self.sum_window = None
         self.setWindowTitle("Operaciones entre matrices")
         self.setFixedSize(640, 480)
         self.setStyleSheet("background-color: #bcbcbc")
@@ -20,19 +22,18 @@ class MatrixOperationWindow(QMainWindow):
     def initUI(self):
         # Layout para la ventana principal
         main_layout = QVBoxLayout()
-        sum_matrix_button = QPushButton("Suma")
-        substraction_matrix_button = QPushButton("Resta")
+        sum_matrix_button = QPushButton("Suma y resta")
         multiplication_matrix_button = QPushButton("Multiplicación")
         close_button = QPushButton("Volver")
         close_button.setFixedSize(80, 30)
 
+        sum_matrix_button.clicked.connect(self.show_sum_window)
         close_button.clicked.connect(self.close_window)
 
         horizontal_layout1 = QHBoxLayout()
         horizontal_layout2 = QHBoxLayout()
 
         horizontal_layout1.addWidget(sum_matrix_button)
-        horizontal_layout1.addWidget(substraction_matrix_button)
         horizontal_layout1.addWidget(multiplication_matrix_button)
 
         horizontal_layout2.addWidget(close_button)
@@ -43,6 +44,11 @@ class MatrixOperationWindow(QMainWindow):
 
         self.container.setLayout(main_layout)
         self.setCentralWidget(self.container)
+
+    def show_sum_window(self):
+        self.setVisible(False)
+        self.sum_window = SumSubMatrixWindow(self)
+        self.sum_window.show()
 
     def closeEvent(self, event):
         self.close_window()

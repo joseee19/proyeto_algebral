@@ -1,5 +1,6 @@
 from matrix_operation_window import MatrixOperationWindow
 from inverse_matrix_window import InverseMatrixWindow
+from matrix_determinant_window import DeterminantWindow
 from PyQt5.QtWidgets import (
     QMainWindow,
     QPushButton,
@@ -18,6 +19,7 @@ class MatrixWindow(QMainWindow):
         self.setStyleSheet("background-color: #bcbcbc")
         self.matrix_operation_window = None
         self.inverse_matrix_window = None
+        self.determinant_window = None
         self.container = QWidget()
         self.initUI()
 
@@ -37,6 +39,7 @@ class MatrixWindow(QMainWindow):
 
         operations_button.clicked.connect(self.show_mtx_op_wndw)
         inverse_matrix_button.clicked.connect(self.show_inverse_matrix_wndw)
+        matrix_determinant_button.clicked.connect(self.show_determinant_window)
         close_button.clicked.connect(self.close_window)
 
         horizontal_layout1 = QHBoxLayout()
@@ -70,6 +73,11 @@ class MatrixWindow(QMainWindow):
         self.setVisible(False)
         self.inverse_matrix_window = InverseMatrixWindow(self)
         self.inverse_matrix_window.show()
+
+    def show_determinant_window(self):
+        self.setVisible(False)
+        self.determinant_window = DeterminantWindow(self)
+        self.determinant_window.show()
 
     def closeEvent(self, event):
         self.close_window()

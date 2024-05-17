@@ -91,3 +91,7 @@ class MainWindow(QMainWindow):
 
     def close_program(self):
         sys.exit(self.app.exec())
+
+    def closeEvent(self, event):
+        self.close_program()
+        event.accept()
