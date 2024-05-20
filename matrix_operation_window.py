@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 from sum_sub_window import SumSubMatrixWindow
+from multiplication_window import MultiplicationMatrixWindow
 
 
 class MatrixOperationWindow(QMainWindow):
@@ -13,6 +14,7 @@ class MatrixOperationWindow(QMainWindow):
         super().__init__()
         self.app = app
         self.sum_window = None
+        self.multiplication_window = None
         self.setWindowTitle("Operaciones entre matrices")
         self.setFixedSize(640, 480)
         self.setStyleSheet("background-color: #bcbcbc")
@@ -28,6 +30,7 @@ class MatrixOperationWindow(QMainWindow):
         close_button.setFixedSize(80, 30)
 
         sum_matrix_button.clicked.connect(self.show_sum_window)
+        multiplication_matrix_button.clicked.connect(self.show_multiplication_window)
         close_button.clicked.connect(self.close_window)
 
         horizontal_layout1 = QHBoxLayout()
@@ -49,6 +52,11 @@ class MatrixOperationWindow(QMainWindow):
         self.setVisible(False)
         self.sum_window = SumSubMatrixWindow(self)
         self.sum_window.show()
+
+    def show_multiplication_window(self):
+        self.setVisible(False)
+        self.multiplication_window = MultiplicationMatrixWindow(self)
+        self.multiplication_window.show()
 
     def closeEvent(self, event):
         self.close_window()

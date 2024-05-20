@@ -1,6 +1,8 @@
 from matrix_operation_window import MatrixOperationWindow
 from inverse_matrix_window import InverseMatrixWindow
 from matrix_determinant_window import DeterminantWindow
+from transpose_range import TransposeMatrixWindow
+from matrix_cifrate import EncryptionWindow
 from PyQt5.QtWidgets import (
     QMainWindow,
     QPushButton,
@@ -20,6 +22,8 @@ class MatrixWindow(QMainWindow):
         self.matrix_operation_window = None
         self.inverse_matrix_window = None
         self.determinant_window = None
+        self.transpose_window = None
+        self.encryption_window = None
         self.container = QWidget()
         self.initUI()
 
@@ -30,7 +34,7 @@ class MatrixWindow(QMainWindow):
         operations_button = QPushButton("Operaciones entre matrices")
         inverse_matrix_button = QPushButton("Matriz inversa")
         matrix_determinant_button = QPushButton("Determinante de matriz")
-        matrix_range_button = QPushButton("Rango de una matriz")
+        matrix_range_button = QPushButton("Rango y transpuesta de una matriz")
         matrix_encryption = QPushButton("Cifrar mensaje")
         markov_chain = QPushButton("Cadena de Markov")
         close_button = QPushButton("Volver")
@@ -40,6 +44,8 @@ class MatrixWindow(QMainWindow):
         operations_button.clicked.connect(self.show_mtx_op_wndw)
         inverse_matrix_button.clicked.connect(self.show_inverse_matrix_wndw)
         matrix_determinant_button.clicked.connect(self.show_determinant_window)
+        matrix_range_button.clicked.connect(self.show_transpose_window)
+        matrix_encryption.clicked.connect(self.show_encryption_window)
         close_button.clicked.connect(self.close_window)
 
         horizontal_layout1 = QHBoxLayout()
@@ -78,6 +84,16 @@ class MatrixWindow(QMainWindow):
         self.setVisible(False)
         self.determinant_window = DeterminantWindow(self)
         self.determinant_window.show()
+
+    def show_transpose_window(self):
+        self.setVisible(False)
+        self.transpose_window = TransposeMatrixWindow(self)
+        self.transpose_window.show()
+
+    def show_encryption_window(self):
+        self.setVisible(False)
+        self.encryption_window = EncryptionWindow(self)
+        self.encryption_window.show()
 
     def closeEvent(self, event):
         self.close_window()

@@ -2,14 +2,14 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QMessageBox
 
 
-class MultiplicationMatrixWindow(QtWidgets.QWidget):
+class MarkovWindow(QtWidgets.QWidget):
     def __init__(self, app):
         super().__init__()
         self.app = app
         self.actual_row_size = 0
         self.actual_col_size = 0
-        self.stored_matrix_A = None
-        self.stored_matrix_B = None
+        self.stored_matrix = None
+        self.stored_matrix_initial = None
         self.matrix_widgets = []
         self.vbox = QtWidgets.QVBoxLayout()
         self.result_box = QHBoxLayout()
@@ -114,10 +114,10 @@ class MultiplicationMatrixWindow(QtWidgets.QWidget):
         # Aquí puedes almacenar la matriz en una variable o usarla para otros fines
         if state:
             print("Matriz A ingresada:")
-            self.stored_matrix_A = matrix
+            self.stored_matrix = matrix
         else:
             print("Matriz B ingresada:")
-            self.stored_matrix_B = matrix
+            self.stored_matrix_initial = matrix
         for row in matrix:
             print(row)
 
@@ -128,12 +128,12 @@ class MultiplicationMatrixWindow(QtWidgets.QWidget):
         self.get_matrix(False)
 
     def multiplication(self):
-        if self.stored_matrix_A is None or self.stored_matrix_B is None:
+        if self.stored_matrix is None or self.stored_matrix_initial is None:
             QMessageBox.critical(self, "Error", "Por favor, guarde ambas matrices antes de realizar la multiplicación.")
             return
 
-        rows_a, cols_a = len(self.stored_matrix_A), len(self.stored_matrix_A[0])
-        rows_b, cols_b = len(self.stored_matrix_B), len(self.stored_matrix_B[0])
+        rows_a, cols_a = len(self.stored_matrix), len(self.stored_matrix[0])
+        rows_b, cols_b = len(self.stored_matrix_initial), len(self.stored_matrix_initial[0])
 
         if cols_a != rows_b:
             QMessageBox.critical(self, "Error",
@@ -146,12 +146,12 @@ class MultiplicationMatrixWindow(QtWidgets.QWidget):
         for i in range(rows_a):
             for j in range(cols_b):
                 for k in range(cols_a):
-                    process_matrix[i][j] += f" {self.stored_matrix_A[i][k]} * {self.stored_matrix_B[k][j]} + "
-                    matrix_result[i][j] += self.stored_matrix_A[i][k] * self.stored_matrix_B[k][j]
+                    process_matrix[i][j] += f" {self.stored_matrix[i][k]} * {self.stored_matrix_initial[k][j]} + "
+                    matrix_result[i][j] += self.stored_matrix[i][k] * self.stored_matrix_initial[k][j]
                 process_matrix[i][j] = process_matrix[i][j].strip(" + ")
 
-        value_a = self.format_matrix(self.stored_matrix_A)
-        value_b = self.format_matrix(self.stored_matrix_B)
+        value_a = self.format_matrix(self.stored_matrix)
+        value_b = self.format_matrix(self.stored_matrix_initial)
         value_p = self.format_matrix(process_matrix, is_process=True)
         value_result = self.format_matrix(matrix_result)
 
