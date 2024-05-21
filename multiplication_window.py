@@ -77,19 +77,23 @@ class MultiplicationMatrixWindow(QtWidgets.QWidget):
         self.show()
 
     def create_matrix_input(self):
+        # Get the number of rows and columns from input fields
         row_size = int(self.row_input.text())
         col_size = int(self.col_input.text())
         self.actual_row_size = row_size
         self.actual_col_size = col_size
 
-        # Limpia el layout anterior si existe
+        # Clear the previous layout if it exists
         for i in reversed(range(self.matrix_layout.count())):
             widget = self.matrix_layout.itemAt(i).widget()
             if widget is not None:
                 self.matrix_layout.removeWidget(widget)
                 widget.deleteLater()
 
-        # Crear campos de entrada para la matriz cuadrada
+        # Initialize matrix_widgets list
+        self.matrix_widgets = []
+
+        # Create input fields for the matrix
         for i in range(row_size):
             row = []
             for j in range(col_size):
@@ -97,6 +101,11 @@ class MultiplicationMatrixWindow(QtWidgets.QWidget):
                 self.matrix_layout.addWidget(line_edit, i, j)
                 row.append(line_edit)
             self.matrix_widgets.append(row)
+
+        # Enable buttons to get matrices
+        self.get_matrix_A_button.setDisabled(False)
+        self.get_matrix_B_button.setDisabled(False)
+        # Enable buttons to get matrices
         self.get_matrix_A_button.setDisabled(False)
         self.get_matrix_B_button.setDisabled(False)
 
@@ -107,7 +116,7 @@ class MultiplicationMatrixWindow(QtWidgets.QWidget):
         for row_widgets in self.matrix_widgets:
             row = []
             for widget in row_widgets:
-                value = int(widget.text())
+                value = float(widget.text())
                 row.append(value)
             matrix.append(row)
 

@@ -3,6 +3,7 @@ from inverse_matrix_window import InverseMatrixWindow
 from matrix_determinant_window import DeterminantWindow
 from transpose_range import TransposeMatrixWindow
 from matrix_cifrate import EncryptionWindow
+from markov_window import MarkovWindow
 from PyQt5.QtWidgets import (
     QMainWindow,
     QPushButton,
@@ -24,6 +25,7 @@ class MatrixWindow(QMainWindow):
         self.determinant_window = None
         self.transpose_window = None
         self.encryption_window = None
+        self.markov_window = None
         self.container = QWidget()
         self.initUI()
 
@@ -46,6 +48,7 @@ class MatrixWindow(QMainWindow):
         matrix_determinant_button.clicked.connect(self.show_determinant_window)
         matrix_range_button.clicked.connect(self.show_transpose_window)
         matrix_encryption.clicked.connect(self.show_encryption_window)
+        markov_chain.clicked.connect(self.show_markov_window)
         close_button.clicked.connect(self.close_window)
 
         horizontal_layout1 = QHBoxLayout()
@@ -94,6 +97,11 @@ class MatrixWindow(QMainWindow):
         self.setVisible(False)
         self.encryption_window = EncryptionWindow(self)
         self.encryption_window.show()
+
+    def show_markov_window(self):
+        self.setVisible(False)
+        self.markov_window = MarkovWindow(self)
+        self.markov_window.show()
 
     def closeEvent(self, event):
         self.close_window()
