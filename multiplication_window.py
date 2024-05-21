@@ -116,7 +116,7 @@ class MultiplicationMatrixWindow(QtWidgets.QWidget):
         for row_widgets in self.matrix_widgets:
             row = []
             for widget in row_widgets:
-                value = float(widget.text())
+                value = int(widget.text())
                 row.append(value)
             matrix.append(row)
 
