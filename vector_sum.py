@@ -1,8 +1,9 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QLabel
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, QLabel
+
 
 class VectoresSum(QWidget):
-    def __init__(self):
+    def __init__(self, app):
         super().__init__()
         self.initUI()
 
@@ -54,8 +55,10 @@ class VectoresSum(QWidget):
         except Exception as e:
             self.result_label.setText(f"Error: {str(e)}")
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = VectoresSum()
-    ex.show()
-    sys.exit(app.exec_())
+    def closeEvent(self, event):
+        self.close_window()
+        event.accept()
+
+    def close_window(self):
+        self.close()
+        self.app.setVisible(True)

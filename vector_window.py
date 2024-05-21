@@ -1,38 +1,66 @@
-import sys
-from PyQt5.QtWidgets import QApplication
+from matrix_operation_window import MatrixOperationWindow
+from inverse_matrix_window import InverseMatrixWindow
 from vector_sum import VectoresSum
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (
+    QMainWindow,
+    QPushButton,
+    QVBoxLayout,
+    QHBoxLayout,
+    QWidget
+)
+
 
 class VectorWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, app):
         super().__init__()
-        self.sum_vector_window = None
+        self.app = app
         self.setWindowTitle("Vectores")
-        self.setFixedSize(800, 640)
+        self.setFixedSize(640, 480)
         self.setStyleSheet("background-color: #bcbcbc")
+        self.vector_sum_window = None
         self.container = QWidget()
         self.initUI()
 
     def initUI(self):
-        self.sum_button = QPushButton('Suma Vectores')
-        self.sum_button.clicked.connect(self.ShowSumWindow)
 
         # Layout para la ventana principal
         main_layout = QVBoxLayout()
-        main_layout.addWidget(self.sum_button)
+        sum_vector_button = QPushButton("Suma de vectores")
+        vector_product = QPushButton("Producto punto de vectores")
+        close_button = QPushButton("Volver")
+
+        close_button.setFixedSize(80, 30)
+
+        sum_vector_button.clicked.connect(self.show_vector_sum_window)
+        close_button.clicked.connect(self.close_window)
+
+        horizontal_layout1 = QHBoxLayout()
+        horizontal_layout2 = QHBoxLayout()
+        horizontal_layout3 = QHBoxLayout()
+
+        horizontal_layout1.addWidget(sum_vector_button)
+
+        horizontal_layout2.addWidget(vector_product)
+
+        horizontal_layout3.addWidget(close_button)
 
         # Crear un widget para el layout y establecerlo como central
+        main_layout.addLayout(horizontal_layout1)
+        main_layout.addLayout(horizontal_layout2)
+        main_layout.addLayout(horizontal_layout3)
+
         self.container.setLayout(main_layout)
         self.setCentralWidget(self.container)
 
-    def ShowSumWindow(self):
-        self.setVisible(False)  # Oculta la ventana principal
-        self.sum_vector_window = VectoresSum(self)  # Instancia la ventana de suma de vectores
-        self.sum_vector_window.setWindowModality(Qt.ApplicationModal)  # Hace que la ventana de suma sea modal
-        self.sum_vector_window.show()  # Muestra la ventana de suma de vectores
+    def show_vector_sum_window(self):
+        self.setVisible(False)
+        self.vector_sum_window = VectoresSum(self)
+        self.vector_sum_window.show()
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = VectorWindow()
-    window.show()
-    sys.exit(app.exec_())
+    def closeEvent(self, event):
+        self.close_window()
+        event.accept()
+
+    def close_window(self):
+        self.close()
+        self.app.setVisible(True)
