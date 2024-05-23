@@ -11,7 +11,7 @@ class EncryptionWindow(QtWidgets.QWidget):
 
     def initUI(self):
         # Layout general
-        vbox = QVBoxLayout()
+        self.vbox = QVBoxLayout()
 
         # Layout para el mensaje
         message_layout = QHBoxLayout()
@@ -20,7 +20,7 @@ class EncryptionWindow(QtWidgets.QWidget):
         self.message_input.setPlaceholderText("Mensaje a cifrar o descifrar")
         message_layout.addWidget(self.message_label)
         message_layout.addWidget(self.message_input)
-        vbox.addLayout(message_layout)
+        self.vbox.addLayout(message_layout)
 
         # Layout para la matriz llave 3x3
         key_layout = QGridLayout()
@@ -30,23 +30,26 @@ class EncryptionWindow(QtWidgets.QWidget):
             row = []
             for j in range(3):
                 line_edit = QLineEdit()
-                line_edit.setPlaceholderText(f"({i + 1},{j + 1})")
                 key_layout.addWidget(line_edit, i + 1, j)
                 row.append(line_edit)
             self.key_widgets.append(row)
-        vbox.addLayout(key_layout)
+        self.vbox.addLayout(key_layout)
+
+        # Layout para mostrar el mensaje cifrado o descifrado
+        self.layout_mensaje = QHBoxLayout()
+        self.vbox.addLayout(self.layout_mensaje)
 
         # Botón para cifrar el mensaje
         self.encrypt_button = QPushButton("Cifrar mensaje")
         self.encrypt_button.clicked.connect(self.encrypt_message)
-        vbox.addWidget(self.encrypt_button)
+        self.vbox.addWidget(self.encrypt_button)
 
         # Botón para descifrar el mensaje
         self.decrypt_button = QPushButton("Descifrar mensaje")
         self.decrypt_button.clicked.connect(self.decrypt_message)
-        vbox.addWidget(self.decrypt_button)
+        self.vbox.addWidget(self.decrypt_button)
 
-        self.setLayout(vbox)
+        self.setLayout(self.vbox)
         self.setWindowTitle("Cifrado y Descifrado de Mensaje con Matriz Llave 3x3")
         self.show()
 
@@ -84,28 +87,37 @@ class EncryptionWindow(QtWidgets.QWidget):
             encrypted_matrix.append(encrypted_vector)
 
         encrypted_message = ''.join([''.join([chr(num + 65) for num in vector]) for vector in encrypted_matrix])
-
-        QMessageBox.information(self, "Mensaje Cifrado", f"El mensaje cifrado es:\n{encrypted_message}")
+        self.clear_layout()
+        self.layout_mensaje.addWidget(QLabel(f"Mensaje cifrado:\n{encrypted_message}"))
 
     def decrypt_message(self):
         key_matrix = self.get_key_matrix()
         if key_matrix is None:
             return
 
+        # Verificar si la matriz llave es invertible (determinante distinto de cero)
+        determinant = int(round(np.linalg.det(key_matrix)))
+        if determinant == 0:
+            QMessageBox.critical(self, "Error", "La matriz llave no es invertible.")
+            return
+
         try:
             # Calcular la matriz inversa en el campo mod 26
-            determinant = int(round(np.linalg.det(key_matrix)))
             determinant_inv = pow(determinant, -1, 26)  # Inverso modular del determinante
             adjugate = np.round(np.linalg.inv(key_matrix) * determinant).astype(int)
             inverse_key_matrix = (determinant_inv * adjugate) % 26
         except np.linalg.LinAlgError:
-            QMessageBox.critical(self, "Error", "La matriz llave no es invertible.")
+            QMessageBox.critical(self, "Error", "Ocurrió un error al calcular la matriz inversa.")
             return
 
         message = self.message_input.text().upper().replace(" ", "")
 
         if len(message) % 3 != 0:
             QMessageBox.critical(self, "Error", "La longitud del mensaje cifrado debe ser múltiplo de 3.")
+            return
+
+        if not message.isalpha():  # Verificar si el mensaje cifrado contiene solo letras del alfabeto
+            QMessageBox.critical(self, "Error", "El mensaje cifrado debe contener solo letras del alfabeto.")
             return
 
         message_matrix = []
@@ -119,8 +131,15 @@ class EncryptionWindow(QtWidgets.QWidget):
             decrypted_matrix.append(decrypted_vector)
 
         decrypted_message = ''.join([''.join([chr(num + 65) for num in vector]) for vector in decrypted_matrix])
+        self.clear_layout()
+        self.layout_mensaje.addWidget(QLabel(f"Mensaje descifrado:\n{decrypted_message}"))
 
-        QMessageBox.information(self, "Mensaje Descifrado", f"El mensaje descifrado es:\n{decrypted_message}")
+    def clear_layout(self):
+        while self.layout_mensaje.count():
+            item = self.layout_mensaje.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
 
     def closeEvent(self, event):
         self.close_window()

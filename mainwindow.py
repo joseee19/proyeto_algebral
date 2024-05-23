@@ -76,7 +76,8 @@ class MainWindow(QMainWindow):
 
     # Funciones para mostrar cada ventana
     def show_vector_window(self):
-        self.vector_window = VectorWindow(self.app)
+        self.setVisible(False)
+        self.vector_window = VectorWindow(self)
         self.vector_window.show()
         while True:
             self.app.processEvents()
