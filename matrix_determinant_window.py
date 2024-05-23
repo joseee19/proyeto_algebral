@@ -8,6 +8,7 @@ class DeterminantWindow(QtWidgets.QWidget):
     def __init__(self, app):
         super().__init__()
         self.app = app
+        self.setStyleSheet("background-color: #bcbcbc")
         self.actual_size = 0
         self.stored_matrix = None
         self.matrix_widgets = []

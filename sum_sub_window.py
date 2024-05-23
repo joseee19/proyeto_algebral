@@ -6,6 +6,7 @@ class SumSubMatrixWindow(QtWidgets.QWidget):
     def __init__(self, app):
         super().__init__()
         self.app = app
+        self.setStyleSheet("background-color: #bcbcbc")
         self.actual_row_size = 0
         self.actual_col_size = 0
         self.stored_matrix_A = None

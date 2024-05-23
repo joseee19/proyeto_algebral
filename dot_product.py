@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushB
 class VectoresProductoPunto(QWidget):
     def __init__(self, app):
         super().__init__()
+        self.setStyleSheet("background-color: #bcbcbc")
         self.initUI()
         self.app = app
 

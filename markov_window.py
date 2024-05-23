@@ -7,6 +7,7 @@ class MarkovWindow(QtWidgets.QWidget):
     def __init__(self, app):
         super().__init__()
         self.app = app
+        self.setStyleSheet("background-color: #bcbcbc")
         self.stored_matrix = None
         self.stored_matrix_initial = None
         self.matrix_widgets1 = []

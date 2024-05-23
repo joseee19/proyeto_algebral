@@ -7,6 +7,7 @@ class EncryptionWindow(QtWidgets.QWidget):
     def __init__(self, app):
         super().__init__()
         self.app = app
+        self.setStyleSheet("background-color: #bcbcbc")
         self.initUI()
 
     def initUI(self):
@@ -81,12 +82,11 @@ class EncryptionWindow(QtWidgets.QWidget):
             chunk = [ord(char) - 65 for char in message[i:i + 3]]
             message_matrix.append(chunk)
 
-        encrypted_matrix = []
-        for vector in message_matrix:
-            encrypted_vector = np.dot(key_matrix, vector) % 26
-            encrypted_matrix.append(encrypted_vector)
+        message_matrix = np.array(message_matrix).T  # Convertir a matriz de columnas
 
-        encrypted_message = ''.join([''.join([chr(num + 65) for num in vector]) for vector in encrypted_matrix])
+        encrypted_matrix = np.dot(key_matrix, message_matrix) % 26
+        encrypted_message = ''.join([''.join([chr(num + 65) for num in col]) for col in encrypted_matrix.T])
+
         self.clear_layout()
         self.layout_mensaje.addWidget(QLabel(f"Mensaje cifrado:\n{encrypted_message}"))
 
@@ -106,8 +106,8 @@ class EncryptionWindow(QtWidgets.QWidget):
             determinant_inv = pow(determinant, -1, 26)  # Inverso modular del determinante
             adjugate = np.round(np.linalg.inv(key_matrix) * determinant).astype(int)
             inverse_key_matrix = (determinant_inv * adjugate) % 26
-        except np.linalg.LinAlgError:
-            QMessageBox.critical(self, "Error", "Ocurrió un error al calcular la matriz inversa.")
+        except np.linalg.LinAlgError as e:
+            QMessageBox.critical(self, "Error", f"Ocurrió un error al calcular la matriz inversa: {str(e)}")
             return
 
         message = self.message_input.text().upper().replace(" ", "")
@@ -125,12 +125,11 @@ class EncryptionWindow(QtWidgets.QWidget):
             chunk = [ord(char) - 65 for char in message[i:i + 3]]
             message_matrix.append(chunk)
 
-        decrypted_matrix = []
-        for vector in message_matrix:
-            decrypted_vector = np.dot(inverse_key_matrix, vector) % 26
-            decrypted_matrix.append(decrypted_vector)
+        message_matrix = np.array(message_matrix).T  # Convertir a matriz de columnas
 
-        decrypted_message = ''.join([''.join([chr(num + 65) for num in vector]) for vector in decrypted_matrix])
+        decrypted_matrix = np.dot(inverse_key_matrix, message_matrix) % 26
+        decrypted_message = ''.join([''.join([chr(num + 65) for num in col]) for col in decrypted_matrix.T])
+
         self.clear_layout()
         self.layout_mensaje.addWidget(QLabel(f"Mensaje descifrado:\n{decrypted_message}"))
 
@@ -148,3 +147,5 @@ class EncryptionWindow(QtWidgets.QWidget):
     def close_window(self):
         self.close()
         self.app.setVisible(True)
+
+# Aquí se debería iniciar la aplicación de PyQt5 si fuera necesario

@@ -19,8 +19,7 @@ class MainWindow(QMainWindow):
 
         # Creamos un widget central para la ventana principal
         widget_central = QWidget()
-        widget_central.setStyleSheet("background-color: #E0EBFF")
-
+        self.setStyleSheet("background-color: #bcbcbc")
         # Creamos un layout horizontal que contendrá a los dos verticales
         layout_horizontal_main = QHBoxLayout()
         layout_vertical_left = QVBoxLayout()
