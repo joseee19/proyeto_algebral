@@ -1,51 +1,71 @@
 from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QMessageBox, QGridLayout
+import sys
 import numpy as np
-from PyQt5.QtWidgets import QMessageBox
 
 
-class InverseMatrixWindow(QtWidgets.QWidget):
+class DeterminantWindow(QtWidgets.QWidget):
     def __init__(self, app):
         super().__init__()
         self.app = app
+        self.actual_size = 0
+        self.stored_matrix = None
+        self.matrix_widgets = []
+        self.vbox = QtWidgets.QVBoxLayout()
+        self.result_box = QVBoxLayout()
+
         self.initUI()
 
     def initUI(self):
-        # Layout general
-        vbox = QtWidgets.QVBoxLayout()
-
         # Layout para el tamaño de la matriz
-        size_layout = QtWidgets.QHBoxLayout()
-        self.size_label = QtWidgets.QLabel("Ingrese el tamaño de la matriz:")
+        size_layout = QHBoxLayout()
+        self.size_label = QLabel("Ingrese el tamaño de la matriz:")
         self.size_input = QtWidgets.QLineEdit()
-        self.size_input.setPlaceholderText("Tamaño de la matriz")
+        self.size_input.setPlaceholderText("Tamaño de la matriz (N)")
         self.size_button = QtWidgets.QPushButton("Crear matriz")
         self.size_button.clicked.connect(self.create_matrix_input)
 
         size_layout.addWidget(self.size_label)
         size_layout.addWidget(self.size_input)
         size_layout.addWidget(self.size_button)
-
-        vbox.addLayout(size_layout)
+        self.vbox.addLayout(size_layout)
 
         # Espacio para los campos de entrada de la matriz
-        self.matrix_layout = QtWidgets.QGridLayout()
+        self.matrix_layout = QGridLayout()
         self.matrix_widgets = []
 
-        vbox.addLayout(self.matrix_layout)
+        self.vbox.addLayout(self.matrix_layout)
 
         # Botón para obtener y mostrar la matriz
-        self.get_matrix_button = QtWidgets.QPushButton("Obtener matriz inversa")
+        self.get_matrix_button = QtWidgets.QPushButton("Guardar matriz")
         self.get_matrix_button.clicked.connect(self.get_matrix)
         self.get_matrix_button.setDisabled(True)
-        vbox.addWidget(self.get_matrix_button)
 
-        self.setLayout(vbox)
-        self.setWindowTitle("Matriz Cuadrada")
+        self.determinant_button = QtWidgets.QPushButton("Calcular determinante")
+        self.determinant_button.clicked.connect(self.calculate_determinant)
+        self.determinant_button.setDisabled(True)
+
+        self.vbox.addWidget(self.get_matrix_button)
+        self.vbox.addWidget(self.determinant_button)
+
+        self.vbox.addLayout(self.result_box)
+
+        self.setLayout(self.vbox)
+        self.setWindowTitle("Cálculo de Determinante de Matriz")
         self.show()
 
     def create_matrix_input(self):
-        size = int(self.size_input.text())
-        self.matrix_widgets = []
+        try:
+            size = int(self.size_input.text())
+        except ValueError:
+            QMessageBox.warning(self, "Error de entrada", "Por favor, ingrese un tamaño válido para la matriz.")
+            return
+
+        if size <= 0:
+            QMessageBox.warning(self, "Error de entrada", "El tamaño de la matriz debe ser mayor que cero.")
+            return
+
+        self.actual_size = size
 
         # Limpia el layout anterior si existe
         for i in reversed(range(self.matrix_layout.count())):
@@ -54,51 +74,79 @@ class InverseMatrixWindow(QtWidgets.QWidget):
                 self.matrix_layout.removeWidget(widget)
                 widget.deleteLater()
 
-        # Crear campos de entrada para la matriz cuadrada
-        for i in range(size):
+        self.matrix_widgets = []
+
+        # Crear campos de entrada para la matriz cuadrada de tamaño N
+        for i in range(self.actual_size):
             row = []
-            for j in range(size):
+            for j in range(self.actual_size):
                 line_edit = QtWidgets.QLineEdit()
                 self.matrix_layout.addWidget(line_edit, i, j)
                 row.append(line_edit)
             self.matrix_widgets.append(row)
-
         self.get_matrix_button.setDisabled(False)
+        self.determinant_button.setDisabled(True)
 
     def get_matrix(self):
-        size = len(self.matrix_widgets)
         matrix = []
 
         # Recopilar valores de los campos de entrada
-        for row_widgets in self.matrix_widgets:
-            row = []
-            for widget in row_widgets:
-                value = int(widget.text())
-                row.append(value)
-            matrix.append(row)
+        try:
+            for row_widgets in self.matrix_widgets:
+                row = []
+                for widget in row_widgets:
+                    value = float(widget.text())
+                    row.append(value)
+                matrix.append(row)
+        except ValueError:
+            QMessageBox.warning(self, "Error de entrada", "Por favor, ingrese valores numéricos válidos en la matriz.")
+            return
 
-        print("Matriz ingresada:")
-        for row in matrix:
-            print(row)
-
-
-
-        # Aquí puedes almacenar la matriz en una variable o usarla para otros fines
         self.stored_matrix = matrix
-        self.get_inverse_matrix()
+        print("Matriz ingresada:")
+        print(self.stored_matrix)
 
-    def get_inverse_matrix(self):
-        # Ejemplo de matriz cuadrada
-        matrix = np.array(
-            self.stored_matrix
-        )
-        # Asegúrate de que la matriz es cuadrada
-        if matrix.shape[0] != matrix.shape[1]:
-            raise ValueError("La matriz debe ser cuadrada para obtener la determinante.")
+        self.determinant_button.setDisabled(False)
 
-        # Calcula el determinante para verificar si la matriz es invertible
+    def calculate_determinant(self):
+        matrix = self.stored_matrix
+        size = len(matrix)
+        if any(len(row) != size for row in matrix):
+            QMessageBox.warning(self, "Error", "La matriz debe ser cuadrada.")
+            return
+
+        determinant, steps = self.laplace_determinant(matrix)
+        self.display_result(matrix, determinant)
+
+    def laplace_determinant(self, matrix):
+        matrix = np.array(matrix)
         determinant = np.linalg.det(matrix)
-        QMessageBox.information(self, "Determinante de la matriz:", f"El resultado de la determinante es:\n{str(determinant)}")
+        steps = [f"Determinante calculado usando numpy.linalg.det: {determinant:.2f}"]
+        return determinant, steps
+
+    def display_result(self, matrix, determinant):
+        self.clear_layout(self.result_box)
+
+        self.result_box.addWidget(QLabel("Matriz Original:"))
+        self.result_box.addWidget(QLabel(self.format_matrix(matrix)))
+
+        self.result_box.addWidget(QLabel(f"Determinante: {determinant:.2f}"))
+
+    def format_matrix(self, matrix):
+        formatted = ""
+        for row in matrix:
+            formatted += "| "
+            for item in row:
+                formatted += f"{item:.2f} "
+            formatted += "|\n"
+        return formatted.strip()
+
+    def clear_layout(self, layout):
+        while layout.count():
+            item = layout.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
 
     def closeEvent(self, event):
         self.close_window()
