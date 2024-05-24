@@ -148,4 +148,3 @@ class EncryptionWindow(QtWidgets.QWidget):
         self.close()
         self.app.setVisible(True)
 
-# Aquí se debería iniciar la aplicación de PyQt5 si fuera necesario
